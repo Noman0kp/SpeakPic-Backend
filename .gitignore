@@ -33,3 +33,7 @@ build/
 .vscode/
 
 application-local.properties
+
+
+# Uploaded memory files
+uploads/

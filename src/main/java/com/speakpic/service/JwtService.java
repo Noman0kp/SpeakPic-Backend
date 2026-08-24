@@ -3,6 +3,8 @@ package com.speakpic.service;
 import com.speakpic.exception.GlobalExceptionHandler;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
@@ -12,7 +14,13 @@ import java.util.Date;
 public class JwtService {
     
     private final GlobalExceptionHandler globalExceptionHandler;
-    private final SecretKey secretKey = Keys.hmacShaKeyFor("SpeakPicSuperSecretKeyForJWTgeneration123456789".getBytes());
+   
+    @Value("${jwt.secret}")
+    private String jwtSecret;
+
+    private SecretKey getSecretKey() {
+        return Keys.hmacShaKeyFor(jwtSecret.getBytes());
+    }
 
     JwtService(GlobalExceptionHandler globalExceptionHandler) {
         this.globalExceptionHandler = globalExceptionHandler;
@@ -24,14 +32,14 @@ public class JwtService {
                 .subject(email)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + 86400000))
-                .signWith(secretKey)
+                .signWith(getSecretKey())
                 .compact();
     }
 
     public String extractEmail(String token) {
         
         return Jwts.parser()
-            .verifyWith(secretKey)
+            .verifyWith(getSecretKey())
             .build()
             .parseSignedClaims(token)
             .getPayload()
