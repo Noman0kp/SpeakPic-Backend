@@ -37,3 +37,5 @@ application-local.properties
 
 # Uploaded memory files
 uploads/
+
+src/main/resources/application.properties
